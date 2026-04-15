@@ -5,7 +5,7 @@ AGENT_CARD = {
     "name": "Echo Agent",
     "version": "1.0.0",
     "description": "A simple agent that echoes back any text it receives.",
-    "url": "http://localhost:8000", # updated at deploy time
+    "url": "https://agent2agent-1081000059174.us-central1.run.app", # updated at deploy time
     "contact": {
         "email": "support@example.com"
     },
