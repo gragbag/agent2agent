@@ -1,4 +1,5 @@
 import uuid
+import json
 from typing import Any, Optional
 
 import httpx
@@ -12,12 +13,34 @@ class A2AClient:
         self._card: Optional[dict[str, Any]] = None
         self._http = httpx.Client(timeout=30)
 
+    @staticmethod
+    def _abbreviate(value: Any, limit: int = 200) -> str:
+        text = json.dumps(value, ensure_ascii=True, separators=(",", ":"))
+        if len(text) <= limit:
+            return text
+        return text[: limit - 3] + "..."
+
+    def _log_request(self, method: str, url: str, payload: Any = None) -> None:
+        print(f"[request] {method} {url}")
+        if payload is not None:
+            print(f"[payload] {self._abbreviate(payload)}")
+
+    def _log_response(self, resp: httpx.Response) -> None:
+        print(f"[response] {resp.status_code} {resp.request.method} {resp.request.url}")
+        try:
+            body = resp.json()
+        except ValueError:
+            body = resp.text
+        print(f"[body] {self._abbreviate(body)}")
+
     # ── 1. Discovery ─────────────────────────────────────────────────
     def fetch_agent_card(self) -> dict[str, Any]:
         """Fetch and cache the Agent Card."""
         if self._card is None:
             url = f"{self.agent_url}/.well-known/agent.json"
+            self._log_request("GET", url)
             resp = self._http.get(url)
+            self._log_response(resp)
             resp.raise_for_status()
             self._card = resp.json()
         return self._card
@@ -50,7 +73,9 @@ class A2AClient:
         self.fetch_agent_card()  # ensure card is cached
         payload = self._build_task(text, **kwargs)
         url = f"{self.agent_url}/tasks/send"
+        self._log_request("POST", url, payload)
         resp = self._http.post(url, json=payload)
+        self._log_response(resp)
         resp.raise_for_status()
 
         data = resp.json()

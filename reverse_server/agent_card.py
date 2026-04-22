@@ -1,7 +1,7 @@
-AGENT_ID = "echo-agent-v1"
-AGENT_NAME = "Echo Agent"
+AGENT_ID = "reverse-agent-v1"
+AGENT_NAME = "Reverse Agent"
 AGENT_VERSION = "1.0.0"
-AGENT_DESCRIPTION = "A simple A2A-compatible agent that echoes text and can mock summarize input."
+AGENT_DESCRIPTION = "An A2A-compatible agent that returns the user's words in reverse order."
 AGENT_URL = "http://localhost:8080"
 AGENT_CONTACT_EMAIL = "support@example.com"
 
@@ -23,19 +23,12 @@ _BASE_AGENT_CARD = {
     "defaultOutputModes": ["text/plain"],
     "skills": [
         {
-            "id": "echo",
-            "name": "Echo",
-            "description": "Returns the user message verbatim.",
+            "id": "reverse",
+            "name": "Reverse",
+            "description": "Returns the user's words in reverse order.",
             "inputModes": ["text/plain"],
             "outputModes": ["text/plain"],
-        },
-        {
-            "id": "summarize",
-            "name": "Summarize",
-            "description": "Summarizes the user-provided text.",
-            "inputModes": ["text/plain"],
-            "outputModes": ["text/plain"],
-        },
+        }
     ],
 }
 
@@ -53,6 +46,7 @@ def get_agent_card(*, url: str | None = None) -> dict:
 
 
 AGENT_CARD = get_agent_card()
+
 
 def validate_card(card: dict) -> bool:
     required_fields = {
@@ -79,3 +73,4 @@ def validate_card(card: dict) -> bool:
         return False
 
     return True
+

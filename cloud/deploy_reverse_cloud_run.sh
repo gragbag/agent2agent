@@ -3,25 +3,21 @@ set -euo pipefail
 
 PROJECT_ID='agent2agent-493406'
 REGION='us-central1'
-SERVICE='echo-a2a-agent'
+SERVICE='reverse-a2a-agent'
 REPO='a2a-lab'
 IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${SERVICE}:latest"
 
-# 1. Create Artifact Registry repo (idempotent)
 gcloud artifacts repositories create ${REPO} \
     --repository-format=docker \
     --location=${REGION} \
     --project=${PROJECT_ID} \
     --quiet 2>/dev/null || true
 
-# 2. Authenticate Docker to Artifact Registry
 gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
 
-# 3. Build & push the container
-docker build -t ${IMAGE} ./server
+docker build -t ${IMAGE} ./reverse_server
 docker push ${IMAGE}
 
-# 4. Deploy to Cloud Run
 gcloud run deploy ${SERVICE} \
     --image=${IMAGE} \
     --platform=managed \
@@ -30,7 +26,6 @@ gcloud run deploy ${SERVICE} \
     --port=8080 \
     --project=${PROJECT_ID}
 
-# 5. Print service URL
 gcloud run services describe ${SERVICE} \
     --platform=managed \
     --region=${REGION} \

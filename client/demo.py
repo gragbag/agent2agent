@@ -2,7 +2,7 @@ from client import A2AClient
 
 
 def main():
-    with A2AClient("http://localhost:8000") as client:
+    with A2AClient("https://agent2agent-1081000059174.us-central1.run.app") as client:
         card = client.fetch_agent_card()
 
         print(f"Agent name: {card.get('name', 'Unknown')}")

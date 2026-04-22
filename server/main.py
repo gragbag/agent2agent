@@ -1,16 +1,23 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from typing import Any, Optional, Literal, Union
 
-from agent_card import AGENT_CARD
-from handlers import handle_task
+try:
+    from .agent_card import AGENT_CARD, get_agent_card
+    from .handlers import handle_task
+except ImportError:
+    from agent_card import AGENT_CARD, get_agent_card
+    from handlers import handle_task
 
-app = FastAPI(title='Echo A2A Agent')
+AGENT_NAME = "Echo Agent"
+
+app = FastAPI(title=AGENT_NAME)
 
 # ── Endpoint 1: Agent Card ──────────────────────────────────────────
 @app.get('/.well-known/agent.json')
-async def get_agent_card():
-    return AGENT_CARD
+async def get_agent_card_endpoint(request: Request):
+    base_url = str(request.base_url).rstrip("/")
+    return get_agent_card(url=base_url or AGENT_CARD["url"])
 
 @app.get('/health')
 async def get_health():

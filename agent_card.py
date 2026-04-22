@@ -53,29 +53,3 @@ def get_agent_card(*, url: str | None = None) -> dict:
 
 
 AGENT_CARD = get_agent_card()
-
-def validate_card(card: dict) -> bool:
-    required_fields = {
-        "id",
-        "name",
-        "version",
-        "description",
-        "url",
-        "contact",
-        "capabilities",
-        "defaultInputModes",
-        "defaultOutputModes",
-        "skills",
-    }
-
-    if not isinstance(card, dict):
-        return False
-
-    if not required_fields.issubset(card.keys()):
-        return False
-
-    contact = card.get("contact")
-    if not isinstance(contact, dict) or "email" not in contact:
-        return False
-
-    return True
